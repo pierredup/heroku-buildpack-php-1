@@ -99,6 +99,8 @@ echo "-----> Installing OPCache"
 
 if [[ "$php_version" =~ 5.5 ]]; then
     echo "zend_extension=opcache.so" >> /app/vendor/php/etc/conf.d/opcache.ini
+elif [[ "$php_version" =~ 5.6 ]]; then
+    echo "zend_extension=opcache.so" >> /app/vendor/php/etc/conf.d/opcache.ini
 else
     /app/vendor/php/bin/pecl install ZendOpcache-beta
    echo "zend_extension=$(/app/vendor/php/bin/php-config --extension-dir)/opcache.so" >> /app/vendor/php/etc/conf.d/opcache.ini
