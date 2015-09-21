@@ -8,6 +8,16 @@ source "$basedir/../conf/buildpack.conf"
 
 export PATH=${basedir}/../vendor/bin:$PATH
 
+if [ -f /etc/debian_version ]; then
+    OS=Debian  # XXX or Ubuntu??
+    VER=$(cat /etc/debian_version)
+elif [ -f /etc/redhat-release ]; then
+    export OS=$(cut -d " " -f 1 /etc/redhat-release | tr '[:upper:]' '[:lower:]')
+    export OS_MAJOR_VERSION=$(sed -rn 's/.*([0-9])\.[0-9].*/\1/p' /etc/redhat-release)
+fi
+
+echo $OS $OS_MAJOR_VERSION
+
 if [ -z "$1" ]; then
     echo "Usage: $0 <version>" >&2
     exit 1
@@ -119,7 +129,7 @@ echo "-----> Moving package to S3"
 s3cmd put \
     --verbose --acl-public \
     "$tempdir/php-${php_version}.tgz" \
-    "s3://$S3_BUCKET/package/php-${php_version}.tgz"
+    "s3://$S3_BUCKET/package/${OS}-${OS_MAJOR_VERSION}-php-${php_version}.tgz"
 
 "$basedir/manifest" php
 "$basedir/package-checksum" "php-${php_version}"
